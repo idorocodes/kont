@@ -3,7 +3,7 @@ use crate::errors::KontError;
 /// A wrapper around a 32-byte array representing a public key.
 /// Derives common traits for cloning, copying, debugging, and structural equality.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct RawPubKey([u8; 32]);
+pub struct RawPubKey(pub [u8; 32]);
 
 impl RawPubKey {
     /// Creates a new `RawPubKey` by copying a 32-byte array.
