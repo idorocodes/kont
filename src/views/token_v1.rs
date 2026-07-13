@@ -20,7 +20,7 @@
 // We just extract the part we need by reading the bytes.
 
 pub struct TokenAccountView<'a> {
-    data: &'a [u8],
+    data: &'a [u8]
 }
 
 impl<'a> TokenAccountView<'a> {
