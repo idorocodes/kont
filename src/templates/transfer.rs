@@ -1,43 +1,44 @@
- use crate::primitives::RawPubKey;
-
+use crate::{primitives::RawPubKey, KontInstruction, RawAccountMeta};
 
 pub struct TransferTemplate {
-    pub data: [u8; 114],
+    accounts: [RawAccountMeta; 3],
+    data: [u8; 9],
 }
-
 impl TransferTemplate {
-    /// Generates an exact 114-byte configuration directly on the CPU stack.
-    /// It populates constant byte segments, such as the Token Program ID,
-    /// account metadata layouts, and the instruction discriminant (3).
-    pub const fn new() -> Self {
-        let mut data = [0u8; 114];
-
-        // Example: Byte 0 could be set as the SPL Token Instruction Discriminant
-        // SPL Token Transfer instruction discriminant is 3
-        data[0] = 3;
- 
-        
-        Self { data }
+    pub fn new() -> Self {
+        Self {
+            accounts: [
+                RawAccountMeta {
+                    pubkey: RawPubKey([0; 32]),
+                    is_signer: false,
+                    is_writable: true,
+                },
+                RawAccountMeta {
+                    pubkey: RawPubKey([0; 32]),
+                    is_signer: false,
+                    is_writable: true,
+                },
+                RawAccountMeta {
+                    pubkey: RawPubKey([0; 32]),
+                    is_signer: true,
+                    is_writable: false,
+                },
+            ],
+            data: {
+                let mut d = [0u8; 9];
+                d[0] = 3; // Transfer discriminator
+                d
+            },
+        }
     }
-
-    /// Overwrites bytes 32 through 64 with the source account public key.
-    pub fn set_source(&mut self, key: &RawPubKey) {
-        self.data[32..64].copy_from_slice(&key.0);
+    pub fn set_source(&mut self, key: RawPubKey) {
+        self.accounts[0].pubkey = key;
     }
-
-    /// Overwrites bytes 66 through 98 with the target destination account public key.
-    pub fn set_destination(&mut self, key: &RawPubKey) {
-        self.data[66..98].copy_from_slice(&key.0);
+    pub fn set_destination(&mut self, key: RawPubKey) {
+        self.accounts[1].pubkey = key;
     }
-
-    /// Overwrites the final metadata section (starting at index 98) with the signing authority key.
-    pub fn set_authority(&mut self, key: &RawPubKey) {
-        // A RawPubKey is exactly 32 bytes, so we slice 98 to 130 (since 98 + 32 = 130).
-        // If your buffer is exactly 114 bytes, let's make sure your destination offsets 
-        // align with your buffer constraints. If the authority key is 32 bytes, ensure
-        // index 98..130 exists, or shift offsets down if 114 is the hard ceiling.
-        // Assuming your layout is custom and fits within the 114 bytes:
-        self.data[98..114].copy_from_slice(&key.0[0..16]); // Adjusted slice limit or adjust template size!
+    pub fn set_authority(&mut self, key: RawPubKey) {
+        self.accounts[2].pubkey = key;
     }
 
     /// Copies the 8 little-endian bytes of the balance scalar into the terminal data slice.
@@ -47,16 +48,23 @@ impl TransferTemplate {
         self.data[106..114].copy_from_slice(&bytes);
     }
 
-    // /// Freezes the stack array and wraps it in a unified transaction export container.
-    // pub fn to_kont_instruction(self) -> KontInstruction {
-    //     KontInstruction {
-    //         // Placeholder: Replace with actual Token Program ID representation if required
-    //         program_id: RawPubKey([0u8; 32]), 
-    //         data: self.data.to_vec(),
-    //     }
-    // }
-}
+    
+    pub fn finish(self) -> KontInstruction {
+    let mut buffer = [0u8; 105];
 
+    buffer[..9].copy_from_slice(&self.data);
+
+    let accounts = alloc::vec::Vec::from(self.accounts);
+
+    KontInstruction {
+        program_id: TOKEN_PROGRAM_ID,
+        account_count: accounts.len(),
+        accounts,
+        data: buffer,
+        data_len: 9,
+    }
+}
+}
 
 pub struct TransferCheckedTemplate {
     // 147-byte pre-allocated static stack buffer
@@ -64,7 +72,7 @@ pub struct TransferCheckedTemplate {
 }
 
 impl TransferCheckedTemplate {
-    /// Allocation of a static 147-byte block on the stack, 
+    /// Allocation of a static 147-byte block on the stack,
     /// pre-stamped with instruction discriminant 12.
     pub const fn new() -> Self {
         let mut buffer = [0u8; 147];
