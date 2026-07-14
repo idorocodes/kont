@@ -47,14 +47,14 @@ impl TransferTemplate {
         self.data[106..114].copy_from_slice(&bytes);
     }
 
-    /// Freezes the stack array and wraps it in a unified transaction export container.
-    pub fn to_kont_instruction(self) -> KontInstruction {
-        KontInstruction {
-            // Placeholder: Replace with actual Token Program ID representation if required
-            program_id: RawPubKey([0u8; 32]), 
-            data: self.data.to_vec(),
-        }
-    }
+    // /// Freezes the stack array and wraps it in a unified transaction export container.
+    // pub fn to_kont_instruction(self) -> KontInstruction {
+    //     KontInstruction {
+    //         // Placeholder: Replace with actual Token Program ID representation if required
+    //         program_id: RawPubKey([0u8; 32]), 
+    //         data: self.data.to_vec(),
+    //     }
+    // }
 }
 
 
@@ -115,8 +115,8 @@ impl TransferCheckedTemplate {
         self.buffer[offset] = decimals;
     }
 
-    /// Seals the buffer sequence for transport handling.
-    pub fn to_kont_instruction(self) -> KontInstruction {
-        KontInstruction::from_raw_parts(self.buffer)
-    }
+    // /// Seals the buffer sequence for transport handling.
+    // pub fn to_kont_instruction(self) -> KontInstruction {
+    //     KontInstruction::from_raw_parts(self.buffer)
+    // }
 }
