@@ -7,7 +7,7 @@ pub struct RawPubKey(pub [u8; 32]);
 
 impl RawPubKey {
     /// Creates a new `RawPubKey` by copying a 32-byte array.
-    pub fn new(bytes: &[u8; 32]) -> Self {
+    pub const fn new(bytes: &[u8; 32]) -> Self {
         Self(*bytes)
     }
 
@@ -38,24 +38,24 @@ pub struct RawAccount<'a> {
 
 impl<'a> RawAccount<'a> {
     /// Constructs a new `RawAccount` using borrowed references.
-    fn new(key: &'a RawPubKey, owner: &'a RawPubKey, data: &'a [u8]) -> Self {
+    pub fn new(key: &'a RawPubKey, owner: &'a RawPubKey, data: &'a [u8]) -> Self {
         Self { key, owner, data }
     }
 
     /// Returns a reference to the account's public key.
-    fn key(&self) -> &RawPubKey {
+   pub  fn key(&self) -> &RawPubKey {
         self.key
     }
 
     /// Returns a reference to the account owner's public key.
-    fn owner(&self) -> &RawPubKey {
+    pub fn owner(&self) -> &RawPubKey {
         self.owner
     }
 
     /// Borrows the account's data slice. 
     /// Returns a `Result` to conform to error-handling interfaces, 
     /// though it currently always returns `Ok`.
-    fn borrow_data(&self) -> Result<&[u8], KontError> {
+   pub  fn borrow_data(&self) -> Result<&[u8], KontError> {
         Ok(self.data)
     }
 }

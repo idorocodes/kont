@@ -34,16 +34,16 @@ impl TransferTemplate {
         }
     }
 
-    pub fn set_source(&mut self, key: RawPubKey) {
-        self.accounts[0].pubkey = key;
+    pub fn set_source(&mut self, key: &RawPubKey) {
+        self.accounts[0].pubkey = *key;
     }
 
-    pub fn set_destination(&mut self, key: RawPubKey) {
-        self.accounts[1].pubkey = key;
+    pub fn set_destination(&mut self, key: &RawPubKey) {
+        self.accounts[1].pubkey = *key;
     }
 
-    pub fn set_authority(&mut self, key: RawPubKey) {
-        self.accounts[2].pubkey = key;
+    pub fn set_authority(&mut self, key: &RawPubKey) {
+        self.accounts[2].pubkey = *key;
     }
 
     /// Copies the 8 little-endian bytes of the balance scalar into the active data slice.
@@ -53,7 +53,7 @@ impl TransferTemplate {
         self.data[1..9].copy_from_slice(&bytes);
     }
 
-    pub fn finish(self) -> KontInstruction {
+    pub fn to_kont_instruction(self) -> KontInstruction {
         let mut buffer = [0u8; 105];
         // Copy the active 9 bytes of instruction data into our standardized 105-byte buffer.
         buffer[..9].copy_from_slice(&self.data);
