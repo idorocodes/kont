@@ -7,19 +7,19 @@ pub struct RawPubKey(pub [u8; 32]);
 
 impl RawPubKey {
     /// Creates a new `RawPubKey` by copying a 32-byte array.
-    fn new(bytes: &[u8; 32]) -> Self {
+    pub fn new(bytes: &[u8; 32]) -> Self {
         Self(*bytes)
     }
 
     /// Returns a reference to the underlying 32-byte array.
-    fn as_bytes(&self) -> &[u8; 32] {
+    pub fn as_bytes(&self) -> &[u8; 32] {
         &self.0
     }
 
     /// Checks for equality between two `RawPubKey` instances.
     /// NOTE: Because `PartialEq` is derived above, `self == other` works out-of-the-box.
     /// If you call this specific method, it will safely use that derived equality.
-    fn eq(&self, other: &RawPubKey) -> bool {
+    pub fn eq(&self, other: &RawPubKey) -> bool {
         self == other
     }
 }

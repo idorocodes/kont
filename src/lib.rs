@@ -9,6 +9,7 @@ extern crate alloc;
 pub mod templates;
 use alloc::vec::Vec;
 use crate::primitives::RawPubKey;
+pub mod  constant;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct RawAccountMeta {

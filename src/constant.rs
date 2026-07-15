@@ -1,0 +1,55 @@
+use crate::primitives::RawPubKey;
+
+// 1. SYSTEM_PROGRAM_ID ("11111111111111111111111111111111")
+pub const SYSTEM_PROGRAM_ID: RawPubKey = RawPubKey([
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+]);
+
+// 2. TOKEN_PROGRAM_ID ("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+pub const TOKEN_PROGRAM_ID: RawPubKey = RawPubKey([
+    6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206, 235, 121, 172, 
+    28, 180, 133, 237, 95, 91, 55, 145, 58, 140, 245, 133, 110, 190, 10, 14
+]);
+
+// 3. TOKEN_2022_PROGRAM_ID ("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")
+pub const TOKEN_2022_PROGRAM_ID: RawPubKey = RawPubKey([
+    6, 222, 10, 48, 123, 228, 23, 166, 175, 230, 219, 6, 120, 202, 169, 97, 
+    166, 92, 153, 150, 114, 182, 18, 146, 13, 241, 188, 30, 245, 112, 194, 212
+]);
+
+// 4. ASSOCIATED_TOKEN_PROGRAM_ID ("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL")
+pub const ASSOCIATED_TOKEN_PROGRAM_ID: RawPubKey = RawPubKey([
+    140, 30, 123, 175, 47, 183, 22, 237, 108, 152, 90, 50, 164, 76, 53, 91, 
+    227, 210, 163, 134, 189, 214, 138, 23, 182, 185, 252, 119, 44, 173, 127, 51
+]);
+
+// 5. MEMO_PROGRAM_ID ("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr")
+pub const MEMO_PROGRAM_ID: RawPubKey = RawPubKey([
+    84, 100, 163, 145, 7, 224, 204, 161, 247, 112, 172, 14, 108, 77, 150, 153, 
+    215, 219, 238, 230, 122, 99, 136, 144, 249, 10, 230, 23, 116, 218, 19, 184
+]);
+
+// 6. COMPUTE_BUDGET_PROGRAM_ID ("ComputeBudget111111111111111111111111111111")
+pub const COMPUTE_BUDGET_PROGRAM_ID: RawPubKey = RawPubKey([
+    3, 12, 170, 78, 19, 58, 237, 230, 77, 50, 101, 123, 222, 224, 231, 226, 
+    184, 225, 202, 161, 239, 195, 214, 210, 52, 11, 201, 141, 115, 0, 0, 0
+]);
+
+// 7. STAKE_PROGRAM_ID ("Stake11111111111111111111111111111111111111")
+pub const STAKE_PROGRAM_ID: RawPubKey = RawPubKey([
+    6, 163, 23, 140, 164, 4, 193, 211, 227, 128, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+]);
+
+// 8. VOTE_PROGRAM_ID ("Vote111111111111111111111111111111111111111")
+pub const VOTE_PROGRAM_ID: RawPubKey = RawPubKey([
+    7, 43, 245, 227, 210, 161, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+]);
+
+// 9. ADDRESS_LOOKUP_TABLE_PROGRAM_ID ("AddressLookupTab1e11111111111111111111111")
+pub const ADDRESS_LOOKUP_TABLE_PROGRAM_ID: RawPubKey = RawPubKey([
+    2, 185, 220, 244, 46, 128, 170, 214, 88, 149, 102, 197, 137, 240, 252, 196, 
+    178, 106, 160, 48, 140, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+]);
