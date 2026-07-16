@@ -225,5 +225,33 @@ pub fn is_active_high_value_account(
 | **`KontInstruction`** | Serialized SVM Instruction metadata | Decouples binary layout from signing client |
 
 
+## Design Notes: Why No `unsafe`?
+
+Most zero-copy Rust crates get their speed by transmuting a raw byte slice directly into a `#[repr(C)]` struct — one pointer reinterpret, zero per-field cost, but it requires `unsafe` and inherits three real risks: misaligned pointers, invalid bit patterns, and lifetime/aliasing violations the compiler can no longer check for you.
+
+Kont takes the other path. Every field is read through safe, bounds-checked slice indexing (`u64::from_le_bytes`, and friends) instead of a raw pointer cast. This means:
+
+- **Zero `unsafe` blocks anywhere in the crate.** The compiler proves memory safety for you — there's no unsafe contract for downstream users to accidentally violate.
+- **No alignment requirements.** Since fields are read as raw bytes and reassembled, Kont doesn't care what address your buffer starts at — unlike transmute-based views, which can UB on misaligned input.
+- **A small, generally negligible cost** in exchange: a few explicit bounds checks per field instead of one big reinterpret. LLVM optimizes repeated small bounds-checked reads at fixed offsets well, so in practice this trade costs far less than people assume.
+
+For a library aimed at execution-critical paths — on-chain programs, secure enclaves, high-throughput indexers — a whole category of memory-safety bugs that never gets a chance to exist is worth more than the marginal cycles saved by `unsafe`.
+
+## Error Handling
+
+All fallible operations in Kont return a `Result<T, KontError>`. No panics, no unwraps on untrusted input.
+
+| Variant | Meaning |
+|---|---|
+| `InvalidBufferLength` | The provided byte slice is shorter than the minimum size required for the target view (e.g. under 165 bytes for a legacy `TokenAccountView`). |
+| `MisalignedPointer` | The data pointer/offset does not satisfy the alignment requirements needed to safely read a field at its expected byte offset. |
+| `InvalidAccountOwner` | The account's owner field does not match the expected authority or program ID for the operation being performed. |
+| `InsufficientFunds` | The account's token balance is lower than the amount required to complete the requested operation. |
+| `UnauthorizedSignature` | The signature provided for this instruction does not match an authorized signer. |
+| `UnknownExtensionType` | A Token-2022 extension type was encountered that Kont does not recognize or support parsing. |
+| `TlvParsingOverflow` | While scanning a Token-2022 account's TLV extension data, a declared length would read past the end of the buffer. |
+| `CheckedMathFailure` | An arithmetic operation on token amounts overflowed or underflowed during a checked computation. |
+
+
 
  
