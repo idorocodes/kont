@@ -61,15 +61,15 @@ impl MintToTemplate {
             is_writable: false
         };
 
-        let mut accounts = alloc::vec::Vec::new();
-        accounts.push(mint_data_meta);
-        accounts.push(destination_account_meta);
-        accounts.push(mint_authority_meta);
-        
+        let mut accounts = [RawAccountMeta::default(); crate::MAX_INSTRUCTION_ACCOUNTS];
+        accounts[0] = mint_data_meta;
+        accounts[1] = destination_account_meta;
+        accounts[2] = mint_authority_meta;
+
         KontInstruction {
             program_id: TOKEN_PROGRAM_ID, 
-            accounts: accounts.clone(),
-            account_count: accounts.len(),
+            accounts,
+            account_count: 3,
             data: self.buffer,
             data_len: self.buffer.len()
         }
@@ -137,15 +137,15 @@ impl BurnTemplate {
             is_writable: false,
         };
 
-        let mut accounts = alloc::vec::Vec::new();
-        accounts.push(source_account_meta);
-        accounts.push(mint_data_meta);
-        accounts.push(authority_meta);
+        let mut accounts = [RawAccountMeta::default(); crate::MAX_INSTRUCTION_ACCOUNTS];
+        accounts[0] = source_account_meta;
+        accounts[1] = mint_data_meta;
+        accounts[2] = authority_meta;
 
         KontInstruction {
             program_id: TOKEN_PROGRAM_ID,
-            accounts: accounts.clone(),
-            account_count: accounts.len(),
+            accounts,
+            account_count: 3,
             data: self.buffer,
             data_len: self.buffer.len(),
         }

@@ -44,7 +44,7 @@ impl<'a> Token2022AccountView<'a> {
 
             // Safety Check: Check if the value payload overflows the slice length
             if offset + l > self.data.len() {
-                return Err(KontError::InvalidBufferLength);
+                return Err(KontError::TlvParsingOverflow);
             }
 
             // 3. Match the extension type

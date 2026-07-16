@@ -1,5 +1,5 @@
 use kont::{ 
-    constant::TOKEN_PROGRAM_ID, primitives::{RawAccount, RawPubKey}, templates::{mint::{BurnTemplate, MintToTemplate}, transfer::{TransferCheckedTemplate, TransferTemplate}}, views::{token_2022::Token2022AccountView, token_v1::TokenAccountView},
+    constant::TOKEN_PROGRAM_ID, errors::KontError, primitives::{RawAccount, RawPubKey}, templates::{mint::{BurnTemplate, MintToTemplate}, transfer::{TransferCheckedTemplate, TransferTemplate}}, views::{token_2022::Token2022AccountView, token_v1::TokenAccountView},
 };
 
 
@@ -131,6 +131,28 @@ fn test_token_2022_dynamic_tlv_scans() {
 
     let missing_ext = view2022.get_extension(99).unwrap();
     assert!(missing_ext.is_none());
+}
+
+#[test]
+fn test_token_2022_corrupted_tlv_length_returns_overflow_error() {
+    // A malicious or corrupted account could declare an extension length
+    // that reads past the end of the actual buffer. The scanner must catch
+    // this and return TlvParsingOverflow instead of panicking or reading OOB.
+    let mut mock_data = [0u8; 200];
+
+    let start_offset = 166;
+    let ext_type: u16 = 3;
+    // Declare a length far larger than the remaining buffer actually has.
+    let bogus_len: u16 = 255;
+
+    mock_data[start_offset..start_offset + 2].copy_from_slice(&ext_type.to_le_bytes());
+    mock_data[start_offset + 2..start_offset + 4].copy_from_slice(&bogus_len.to_le_bytes());
+    // Deliberately no value payload written - buffer is too short for `bogus_len`.
+
+    let view2022 = Token2022AccountView::try_from_slice(&mock_data).expect("Should wrap safely");
+
+    let result = view2022.get_extension(ext_type);
+    assert_eq!(result, Err(KontError::TlvParsingOverflow));
 }
 // =========================================================================
 // 4. Stencil-Based Stack Template (Write) Tests

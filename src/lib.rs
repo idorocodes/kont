@@ -4,18 +4,33 @@ pub mod errors;
 pub mod primitives;
 
 pub mod views;
-extern crate alloc;
 
 pub mod templates;
 use crate:: primitives::RawPubKey;
-use alloc::vec::Vec;
 pub mod constant;
+
+/// Maximum number of accounts any single Kont instruction template needs
+/// (currently `TransferCheckedTemplate`, at 4 accounts).
+pub const MAX_INSTRUCTION_ACCOUNTS: usize = 4;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct RawAccountMeta {
     pub pubkey: RawPubKey,
     pub is_signer: bool,
     pub is_writable: bool,
+}
+
+impl Default for RawAccountMeta {
+    /// An inert, all-zero placeholder used to pad unused slots in a
+    /// fixed-size `[RawAccountMeta; N]` array. Never a valid account meta
+    /// on its own — callers must only read the first `account_count` slots.
+    fn default() -> Self {
+        Self {
+            pubkey: RawPubKey([0u8; 32]),
+            is_signer: false,
+            is_writable: false,
+        }
+    }
 }
 
 
@@ -36,7 +51,7 @@ impl RawAccountMeta {
 
 pub struct KontInstruction {
     pub program_id: RawPubKey,
-    pub accounts: Vec<RawAccountMeta>,
+    pub accounts: [RawAccountMeta; MAX_INSTRUCTION_ACCOUNTS],
     pub account_count: usize,
     pub data: [u8; 105],
     pub data_len: usize,
@@ -52,7 +67,13 @@ impl KontInstruction {
         self.account_count
     }
 
-    
+    /// Returns only the valid, populated account metas (ignores unused
+    /// padding slots beyond `account_count`).
+    #[inline(always)]
+    pub fn accounts(&self) -> &[RawAccountMeta] {
+        &self.accounts[..self.account_count]
+    }
+
     #[inline(always)]
     pub fn as_bytes(&self) -> &[u8] {
         &self.data[..self.data_len]

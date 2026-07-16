@@ -58,11 +58,12 @@ impl TransferTemplate {
         // Copy the active 9 bytes of instruction data into our standardized 105-byte buffer.
         buffer[..9].copy_from_slice(&self.data);
 
-        let accounts = alloc::vec::Vec::from(self.accounts);
+        let mut accounts = [RawAccountMeta::default(); crate::MAX_INSTRUCTION_ACCOUNTS];
+        accounts[..3].copy_from_slice(&self.accounts);
 
         KontInstruction {
             program_id: TOKEN_PROGRAM_ID,
-            account_count: accounts.len(),
+            account_count: 3,
             accounts,
             data: buffer,
             data_len: 9, // Let downstream consumers know only the first 9 bytes are data
@@ -168,11 +169,7 @@ impl TransferCheckedTemplate {
             is_writable: false, // Authority/Owner is read-only
         };
 
-        let mut accounts = alloc::vec::Vec::new();
-        accounts.push(source_meta);
-        accounts.push(mint_meta);
-        accounts.push(destination_meta);
-        accounts.push(authority_meta);
+        let accounts = [source_meta, mint_meta, destination_meta, authority_meta];
 
         // Extract the remaining 9 bytes of instruction data (Amount (8) + Decimals (1)) at offset 129
         let mut data_payload = [0u8; 105];
