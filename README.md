@@ -34,7 +34,7 @@ pub fn quick_verify_vault(
 
     // 2. Cast the view instantly (Zero memory copy, zero heap allocations)
     // Legacy SPL Token accounts are exactly 165 bytes
-    let vault_view = TokenAccountView::try_from_slice(&bytes[0..165])?;
+    let vault_view = TokenAccountView::try_from_slice(&bytes)?;
 
     // 3. Offset reads executed directly via pointer jumps
     if !vault_view.owner().eq(expected_owner) {
