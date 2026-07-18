@@ -1,0 +1,15 @@
+[package]
+name = "program-tests"
+version = "0.1.0"
+edition = "2021"
+
+# This tells Cargo to look for our test file explicitly
+[[test]]
+name = "litesvm_test"
+path = "test.rs"
+
+[dependencies]
+litesvm = "0.14.0"
+solana-program = "4.0.0"
+solana-sdk = "4.0.1"
+spl-token = "9.0.0"
